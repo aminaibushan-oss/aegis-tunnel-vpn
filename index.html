@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis Tunnel VPN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #0a0f1d 0%, #030712 100%);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Header Style */
+        header {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #0ea5e9;
+            box-shadow: 0 0 25px rgba(14, 165, 233, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            border: 2px solid #38bdf8;
+            font-size: 40px;
+        }
+
+        header h1 {
+            font-size: 24px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #38bdf8, #0ea5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+
+        /* Main Connection Area */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        .power-btn {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: #111827;
+            border: 5px solid #ef4444;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .power-btn::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            animation: rotate 10s linear infinite;
+        }
+
+        .power-icon {
+            font-size: 50px;
+            color: #ef4444;
+            transition: all 0.4s ease;
+        }
+
+        .status-text {
+            font-size: 14px;
+            margin-top: 10px;
+            color: #ef4444;
+            font-weight: bold;
+            letter-spacing: 1s;
+            text-transform: uppercase;
+        }
+
+        /* Connected State */
+        .power-btn.connected {
+            border-color: #22c55e;
+            box-shadow: 0 0 50px rgba(34, 197, 94, 0.6);
+            background: #062010;
+        }
+
+        .power-btn.connected .power-icon {
+            color: #22c55e;
+            transform: scale(1.05);
+        }
+
+        .power-btn.connected .status-text {
+            color: #22c55e;
+        }
+
+        /* Stats Dashboard */
+        .stats-panel {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+            background: rgba(17, 24, 39, 0.7);
+            padding: 15px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-box span {
+            display: block;
+            font-size: 11px;
+            color: #9ca3af;
+            text-transform: uppercase;
+        }
+
+        .stat-box p {
+            font-size: 16px;
+            font-weight: bold;
+            color: #38bdf8;
+            margin-top: 2px;
+        }
+
+        /* Server Dropdown Selector */
+        .server-selector {
+            width: 100%;
+            max-width: 300px;
+            background: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .server-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .flag {
+            font-size: 20px;
+        }
+
+        .server-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        select {
+            background: transparent;
+            color: white;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        select option {
+            background: #111827;
+            color: white;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-container">🛡️</div>
+        <h1>Aegis Tunnel</h1>
+        <p>Secure & High-Speed Internet</p>
+    </header>
+
+    <!-- Main VPN Interface -->
+    <div class="main-container">
+        <div class="power-btn" id="vpnButton" onclick="toggleConnection()">
+            <div class="power-icon">👁️‍🗨️</div>
+            <div class="status-text" id="statusLabel">Disconnect</div>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="stats-panel">
+            <div class="stat-box">
+                <span>Download</span>
+                <p id="downSpeed">0.00 Mbps</p>
+            </div>
+            <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
+            <div class="stat-box">
+                <span>Upload</span>
+                <p id="upSpeed">0.00 Mbps</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Server Selector -->
+    <div class="server-selector">
+        <div class="server-info">
+            <span class="flag">🌐</span>
+            <select id="serverSelect">
+                <option value="ng">Nigeria (Auto Location)</option>
+                <option value="us">United States (Premium)</option>
+                <option value="uk">United Kingdom (Fast)</option>
+                <option value="de">Germany (Secure)</option>
+                <option value="ca">Canada (Ultra)</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        let isConnected = false;
+        let intervalId = null;
+
+        function toggleConnection() {
+            const btn = document.getElementById('vpnButton');
+            const label = document.getElementById('statusLabel');
+            const down = document.getElementById('downSpeed');
+            const up = document.getElementById('upSpeed');
+
+            isConnected = !isConnected;
+
+            if (isConnected) {
+                btn.classList.add('connected');
+                label.innerText = "Connected";
+                
+                // Simulate network speed data flow
+                intervalId = setInterval(() => {
+                    down.innerText = (Math.random() * (45 - 12) + 12).toFixed(2) + " Mbps";
+                    up.innerText = (Math.random() * (15 - 4) + 4).toFixed(2) + " Mbps";
+                }, 1500);
+            } else {
+                btn.classList.remove('connected');
+                label.innerText = "Disconnect";
+                clearInterval(intervalId);
+                down.innerText = "0.00 Mbps";
+                up.innerText = "0.00 Mbps";
+            }
+        }
+    </script>
+</body>
+</html>
